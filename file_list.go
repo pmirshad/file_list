@@ -10,6 +10,7 @@ package file_list
 import (
   "os"
   "path/filepath"
+  "sort"
   "time"
 )
 
@@ -21,6 +22,27 @@ type FileInfo struct {
   ModTime time.Time   // modification time
   IsDir   bool        // abbreviation for Mode().IsDir()
 }
+
+// byModTime implements sort.Interface.
+type byModTime []FileInfo
+
+func (f byModTime) Len() int           { return len(f) }
+func (f byModTime) Less(i, j int) bool { return f[i].ModTime.Before(f[j].ModTime) }
+func (f byModTime) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
+
+// byName implements sort.Interface.
+type byName []FileInfo
+
+func (f byName) Len() int           { return len(f) }
+func (f byName) Less(i, j int) bool { return f[i].Name < f[j].Name }
+func (f byName) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
+
+// bySize implements sort.Interface.
+type bySize []FileInfo
+
+func (f bySize) Len() int           { return len(f) }
+func (f bySize) Less(i, j int) bool { return f[i].Size < f[j].Size }
+func (f bySize) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
 
 // AllFiles enumerates a list of files (and directories) under the directory
 // specified as argument. Directories are included if include_dirs is set
@@ -55,4 +77,34 @@ func AllFiles(root string, include_dirs bool) (result []FileInfo) {
   }
 
   return files
+}
+
+// Sort the slice of FileInfos by Name reverse sorting if the reverse parameter
+// is set
+func SortByName(files *[]FileInfo, reverse bool) {
+  if reverse {
+    sort.Sort(sort.Reverse(byName(*files)))
+  } else {
+    sort.Sort(byName(*files))
+  }
+}
+
+// Sort the slice of FileInfos by ModTime reverse sorting if the reverse parameter
+// is set
+func SortByModTime(files *[]FileInfo, reverse bool) {
+  if reverse {
+    sort.Sort(sort.Reverse(byModTime(*files)))
+  } else {
+    sort.Sort(byModTime(*files))
+  }
+}
+
+// Sort the slice of FileInfos by Size reverse sorting if the reverse parameter
+// is set
+func SortBySize(files *[]FileInfo, reverse bool) {
+  if reverse {
+    sort.Sort(sort.Reverse(bySize(*files)))
+  } else {
+    sort.Sort(bySize(*files))
+  }
 }
