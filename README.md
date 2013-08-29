@@ -13,6 +13,23 @@ Invoke the function as
 
 AllFiles returns a slice of type file_list.FileInfo
 
+Sort Functions
+--------------
+
+The first argument to the sort functions is a reference to the slice to be sorted. The second argument is a `bool` which decides whether the list is sorted in reverse order.
+
+1. By **modification time**
+
+        file_list.SortByModTime(&files, false)
+
+2. By **name**
+
+        file_list.SortByName(&files, false)
+
+3. By **size**
+
+        file_list.SortBySize(&files, false)
+
 type FileInfo
 -------------
 
